@@ -28,7 +28,7 @@ src/test/java/com/company/automation/
 │   └── web/            # Questions UI
 ├── ui/
 │   └── pages/          # UI Targets por página
-├── stepdefinitions/    # Step Definitions Cucumber + Hooks
+├── stepdefinitions/    # Hooks y WebPurchaseStepDefinitions
 └── runners/            # JUnit Runner web (WebUIRunner)
 
 src/test/resources/

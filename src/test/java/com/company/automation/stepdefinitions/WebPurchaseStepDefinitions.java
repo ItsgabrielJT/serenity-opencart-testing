@@ -2,10 +2,15 @@ package com.company.automation.stepdefinitions;
 
 import com.company.automation.models.CustomerData;
 import com.company.automation.questions.web.TheOrderConfirmationMessage;
-import com.company.automation.tasks.web.*;
+import com.company.automation.tasks.web.AddProductToCart;
+import com.company.automation.tasks.web.FillBillingDetails;
+import com.company.automation.tasks.web.NavigateToHomePage;
+import com.company.automation.tasks.web.SearchForProduct;
 import com.company.automation.ui.pages.CheckoutPageTargets;
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
@@ -16,12 +21,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.Map;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.Matchers.containsString;
 
-public class UIPurchaseStepDefinitions {
+public class WebPurchaseStepDefinitions {
 
     private static final String CHECKOUT_URL = "http://opencart.abstracta.us/index.php?route=checkout/checkout";
 
@@ -32,9 +36,9 @@ public class UIPurchaseStepDefinitions {
                 return actor;
             }
         } catch (Exception e) {
-            // Ignorar - El actor no está en el spotlight aún
+            // Ignorar - El actor no esta en el spotlight aun
         }
-        
+
         return OnStage.theActorCalled("Customer");
     }
 
@@ -106,6 +110,22 @@ public class UIPurchaseStepDefinitions {
         }
     }
 
+    private CustomerData customerDataFrom(DataTable dataTable) {
+        var data = dataTable.asMap(String.class, String.class);
+
+        return CustomerData.builder()
+                .firstName(data.get("firstName"))
+                .lastName(data.get("lastName"))
+                .email(data.get("email"))
+                .telephone(data.get("telephone"))
+                .address(data.get("address"))
+                .city(data.get("city"))
+                .postcode(data.get("postcode"))
+                .country(data.get("country"))
+                .region(data.get("region"))
+                .build();
+    }
+
     @Given("the customer is on the OpenCart home page")
     public void theCustomerIsOnTheOpenCartHomePage() {
         OnStage.theActorCalled("Customer").attemptsTo(NavigateToHomePage.now());
@@ -113,16 +133,12 @@ public class UIPurchaseStepDefinitions {
 
     @When("the customer searches for {string}")
     public void theCustomerSearchesFor(String product) {
-        customer().attemptsTo(
-                SearchForProduct.called(product)
-        );
+        customer().attemptsTo(SearchForProduct.called(product));
     }
 
     @When("the customer adds {string} to the cart from the search results")
     public void theCustomerAddsProductToCartFromSearchResults(String productName) {
-        customer().attemptsTo(
-                AddProductToCart.named(productName)
-        );
+        customer().attemptsTo(AddProductToCart.named(productName));
     }
 
     @When("the customer navigates to checkout via shopping cart")
@@ -134,7 +150,6 @@ public class UIPurchaseStepDefinitions {
     public void theCheckoutPageShouldDisplay() {
         waitForUrl("checkout", "Checkout page did not display");
     }
-
 
     @Then("the billing details section should display")
     public void theBillingDetailsSectionShouldDisplay() {
@@ -156,9 +171,19 @@ public class UIPurchaseStepDefinitions {
         clickButtonById("button-guest-shipping", "Failed to click continue from delivery details");
     }
 
+    @Then("the delivery method section should display")
+    public void theDeliveryMethodSectionShouldDisplay() {
+        waitForUrl("checkout/checkout", "Delivery method section did not display");
+    }
+
     @When("the customer clicks continue from delivery method")
     public void theCustomerClicksContinueFromDeliveryMethod() {
         clickButtonById("button-shipping-method", "Failed to click continue from delivery method");
+    }
+
+    @Then("the payment method section should display")
+    public void thePaymentMethodSectionShouldDisplay() {
+        waitForVisible(CheckoutPageTargets.TERMS_AND_CONDITIONS_CHECKBOX, "Payment method section did not display");
     }
 
     @When("the customer agrees to the terms and conditions")
@@ -176,54 +201,20 @@ public class UIPurchaseStepDefinitions {
         waitForVisible(CheckoutPageTargets.CONFIRM_ORDER_BUTTON, "Confirm order section did not display");
     }
 
-    @Then("the order confirmation page should display")
-    public void theOrderConfirmationPageShouldDisplay() {
-        waitForUrl("success", "Order confirmation page did not display");
-    }
-
-    @Then("the delivery method section should display")
-    public void theDeliveryMethodSectionShouldDisplay() {
-        waitForUrl("checkout/checkout", "Delivery method section did not display");
-    }
-
-    @Then("the payment method section should display")
-    public void thePaymentMethodSectionShouldDisplay() {
-        waitForVisible(CheckoutPageTargets.TERMS_AND_CONDITIONS_CHECKBOX, "Payment method section did not display");
-    }
-
-    @When("the customer fills in the billing details with:")
-    public void theCustomerFillsInTheBillingDetailsWith(DataTable dataTable) {
-        Map<String, String> data = dataTable.asMap(String.class, String.class);
-        CustomerData customerData = CustomerData.builder()
-                .firstName(data.get("firstName"))
-                .lastName(data.get("lastName"))
-                .email(data.get("email"))
-                .telephone(data.get("telephone"))
-                .address(data.get("address"))
-                .city(data.get("city"))
-                .postcode(data.get("postcode"))
-                .country(data.get("country"))
-                .region(data.get("region"))
-                .build();
-
-        customer().attemptsTo(
-                FillBillingDetails.using(customerData)
-        );
-    }
-
     @When("the customer confirms the order")
     public void theCustomerConfirmsTheOrder() {
         clickButtonById("button-confirm", "Failed to confirm the order");
     }
 
-    @Then("the order confirmation message should contain {string}")
-    public void theOrderConfirmationMessageShouldContain(String expectedMessage) {
-        customer().should(
-                seeThat(TheOrderConfirmationMessage.displayed(),
-                        containsString(expectedMessage))
-        );
+    @Then("the order confirmation page should display")
+    public void theOrderConfirmationPageShouldDisplay() {
+        waitForUrl("success", "Order confirmation page did not display");
     }
 
+    @Then("the order confirmation message should contain {string}")
+    public void theOrderConfirmationMessageShouldContain(String expectedMessage) {
+        customer().should(seeThat(TheOrderConfirmationMessage.displayed(), containsString(expectedMessage)));
+    }
 
     @When("the customer selects guest checkout")
     public void theCustomerSelectsGuestCheckout() {
@@ -234,5 +225,10 @@ public class UIPurchaseStepDefinitions {
     public void theCustomerClicksContinueFromCheckoutOptions() {
         clickButtonById("button-account", "Failed to click continue from checkout options");
         waitForVisible(CheckoutPageTargets.BILLING_FIRSTNAME, "Billing details section did not display after checkout options");
+    }
+
+    @When("the customer fills in the billing details with:")
+    public void theCustomerFillsInTheBillingDetailsWith(DataTable dataTable) {
+        customer().attemptsTo(FillBillingDetails.using(customerDataFrom(dataTable)));
     }
 }
