@@ -23,33 +23,27 @@ Framework de automatización QA empresarial construido con **Java + Serenity BDD
 
 ## Estructura del proyecto
 
-```
+```text
 src/test/java/com/company/automation/
 ├── abilities/          # Capacidades de los actores (Web, API, DB)
-├── config/             # Configuración de infraestructura (DB pool)
+├── config/             # Configuración de infraestructura (DB/Web)
 ├── models/             # POJOs de datos de negocio
 ├── tasks/
-│   ├── web/            # Tasks de interfaz web (Screenplay)
-│   ├── api/            # Tasks de API REST (Screenplay REST)
-│   └── db/             # Tasks de base de datos
+│   └── web/            # Tasks de interfaz web (Screenplay)
 ├── questions/
-│   ├── web/            # Questions UI
-│   ├── api/            # Questions API
-│   └── db/             # Questions DB
+│   └── web/            # Questions UI
 ├── ui/
 │   └── pages/          # UI Targets por página
 ├── stepdefinitions/    # Step Definitions Cucumber + Hooks
-├── runners/            # JUnit Runners (full, smoke, ui, api)
+├── runners/            # JUnit Runners (TestSuiteRunner, WebUIRunner)
 └── utils/              # Utilidades (Faker, TestDataLoader, ConfigReader)
 
 src/test/resources/
 ├── features/
-│   ├── web/            # ui_purchase.feature
-│   └── api/            # api_orders.feature, db_validation.feature
+│   └── web/            # ui_purchase.feature
 ├── testdata/           # users.json, products.csv
 ├── serenity.conf       # Configuración Serenity
-├── cucumber.properties
-└── db.properties       # Configuración de base de datos
+└── cucumber.properties # Configuración Cucumber
 ```
 
 ---
@@ -61,31 +55,21 @@ src/test/resources/
 ./gradlew test 
 ```
 
-### Solo smoke
-```bash
-./gradlew test -Dcucumber.filter.tags="@smoke" 
-```
-
-### Solo API
-```bash
-./gradlew test -Dcucumber.filter.tags="@api" 
-```
-
-### Solo UI
+### Solo UI (Web)
 ```bash
 ./gradlew test -Dcucumber.filter.tags="@ui" 
 ```
 
 ### Por runner específico
 ```bash
-./gradlew test --tests "com.company.automation.runners.SmokeTestRunner" 
-./gradlew test --tests "com.company.automation.runners.APIRunner" 
+./gradlew test --tests "com.company.automation.runners.WebUIRunner" 
+./gradlew test --tests "com.company.automation.runners.TestSuiteRunner" 
 ```
 
 ### Headless (CI)
 ```bash
 ./gradlew test \
-  -Dcucumber.filter.tags="@smoke" \
+  -Dcucumber.filter.tags="@ui" \
   -Dchrome.switches="--no-sandbox,--disable-dev-shm-usage,--disable-gpu,--headless=new" \
   
 ```
@@ -96,12 +80,9 @@ src/test/resources/
 
 | Tag          | Descripción                              |
 |--------------|------------------------------------------|
-| `@smoke`     | Pruebas críticas de humo                 |
-| `@regression`| Suite completa de regresión              |
-| `@ui`        | Pruebas de interfaz web                  |
-| `@api`       | Pruebas de API REST                      |
-| `@db`        | Validaciones de base de datos            |
-| `@wip`       | En desarrollo (excluidos del CI)         |
+| `@ui`        | Pruebas de interfaz web (E2E)            |
+
+*(Nota: los tags de api, db, smoke, regression se añadirán conforme se expandan las pruebas de esos bloques).*
 
 ---
 
@@ -115,19 +96,6 @@ open target/serenity-reports/index.html
 
 ---
 
-## Configurar los Locators UI
-
-Los Targets en `src/test/java/com/company/automation/ui/pages/` tienen los XPath vacíos.
-Completar inspeccionando el HTML de `http://opencart.abstracta.us/`:
-
-```java
-// Ejemplo: HomePageTargets.java
-public static final Target SEARCH_INPUT =
-        Target.the("search input field")
-              .located(By.xpath("//input[@name='search']"));
-```
-
----
 
 ## Principios aplicados
 
