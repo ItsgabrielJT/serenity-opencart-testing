@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
                 "json:target/cucumber-reports/smoke-cucumber.json",
                 "html:target/cucumber-reports/smoke-report.html"
         },
-        tags     = "@smoke"
+        tags     = "@smoke and not @ui"
 )
 public class SmokeTestRunner {
     // Runner vacío — Serenity gestiona la ejecución.

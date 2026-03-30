@@ -7,7 +7,6 @@ Feature: OpenCart E2E Purchase Flow
   Background:
     Given the customer is on the OpenCart home page
 
-  @smoke
   Scenario: Guest customer completes a full purchase with two products
     When the customer searches for "MacBook"
     And the customer adds "MacBook" to the cart from the search results

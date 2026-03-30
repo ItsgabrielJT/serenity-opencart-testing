@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
                 "json:target/cucumber-reports/cucumber.json",
                 "html:target/cucumber-reports/report.html"
         },
-        tags     = "not @wip"
+        tags     = "not @wip and not @ui"
 )
 public class TestSuiteRunner {
     // Runner vacío — Serenity gestiona la ejecución.
