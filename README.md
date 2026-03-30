@@ -99,18 +99,17 @@ El proyecto genera unicamente reportes Serenity. Los reportes HTML de Cucumber f
 
 Despues de ejecutar `./gradlew test`, el reporte que debes abrir es:
 
-`target/site/serenity/index.html`
+`target/serenity-reports/index.html`
 
 Ese archivo es la vista final consolidada de Serenity.
 
 ```bash
-open target/site/serenity/index.html
+open target/serenity-reports/index.html
 ```
 
 Nota:
 
-- `target/site/serenity/` contiene el HTML final que debes revisar.
-- `target/serenity-reports/` es una carpeta interna de trabajo de Serenity y no es el punto de entrada recomendado para revisar resultados.
+- `target/serenity-reports/` contiene el reporte HTML final y los artefactos de Serenity en un solo lugar.
 
 ---
 

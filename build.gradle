@@ -27,6 +27,14 @@ ext {
     hikariVersion             = '5.1.0'
 }
 
+serenity {
+    sourceDirectory = 'build/test-results/test'
+    outputDirectory = 'target/serenity-reports'
+    requirementsBaseDir = 'src/test/resources/features'
+    generateOutcomes = true
+    reports = ['single-page-html']
+}
+
 dependencies {
 
     // ─── Serenity Core ────────────────────────────────────────────────────────
@@ -73,6 +81,7 @@ dependencies {
 test {
     useJUnit()
     systemProperties System.properties
+    systemProperty 'serenity.outputDirectory', file('target/serenity-reports').absolutePath
     outputs.upToDateWhen { false }
     finalizedBy aggregate
     testLogging {
