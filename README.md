@@ -55,6 +55,8 @@ src/test/resources/
 ./gradlew test 
 ```
 
+Este comando ejecuta la suite configurada por defecto en cada invocación. La tarea `test` no reutiliza el estado `UP-TO-DATE`, por lo que siempre lanza los runners JUnit/Serenity detectados.
+
 ### Solo UI (Web)
 ```bash
 ./gradlew test -Dcucumber.filter.tags="@ui" 
@@ -65,6 +67,11 @@ src/test/resources/
 ./gradlew test --tests "com.company.automation.runners.WebUIRunner" 
 ./gradlew test --tests "com.company.automation.runners.TestSuiteRunner" 
 ```
+
+Runners disponibles actualmente:
+
+- `WebUIRunner`: ejecuta los escenarios etiquetados con `@ui`.
+- `TestSuiteRunner`: ejecuta la suite general con exclusión de `@ui` y `@wip`.
 
 ### Headless (CI)
 ```bash
@@ -88,11 +95,22 @@ src/test/resources/
 
 ## Reportes
 
-Los reportes Serenity se generan en `target/serenity-reports/index.html`.
+El proyecto genera unicamente reportes Serenity. Los reportes HTML de Cucumber fueron eliminados para evitar salidas duplicadas.
+
+Despues de ejecutar `./gradlew test`, el reporte que debes abrir es:
+
+`target/site/serenity/index.html`
+
+Ese archivo es la vista final consolidada de Serenity.
 
 ```bash
-open target/serenity-reports/index.html
+open target/site/serenity/index.html
 ```
+
+Nota:
+
+- `target/site/serenity/` contiene el HTML final que debes revisar.
+- `target/serenity-reports/` es una carpeta interna de trabajo de Serenity y no es el punto de entrada recomendado para revisar resultados.
 
 ---
 
