@@ -1,4 +1,4 @@
-@ui @regression
+@ui
 Feature: OpenCart E2E Purchase Flow
   As a guest customer
   I want to purchase products from the OpenCart store
@@ -38,4 +38,4 @@ Feature: OpenCart E2E Purchase Flow
     Then the confirm order section should display
     When the customer confirms the order
     Then the order confirmation page should display
-    And the order confirmation message should contain "Your order has been placed"
+  Then the order confirmation message should contain "Your order has been placed"

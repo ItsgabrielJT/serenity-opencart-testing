@@ -29,7 +29,7 @@ public class TheOrderConfirmationMessage implements Question<String> {
 
     @Override
     public String answeredBy(Actor actor) {
-        return Text.of(OrderConfirmationPageTargets.SUCCESS_MESSAGE)
+        return Text.of(OrderConfirmationPageTargets.CONFIRMATION_HEADING)
                    .answeredBy(actor);
     }
 }

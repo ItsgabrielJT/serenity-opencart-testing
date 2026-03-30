@@ -76,9 +76,15 @@ test {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
     }
+    
     // Parallel execution - Solo una prueba a la vez
     maxParallelForks = 1
     forkEvery = 1
+    
+    // Excluir runners para evitar ejecuciones múltiples
+    // Solo APIRunner se ejecuta siempre
+    exclude "**/TestSuiteRunner.class"
+    exclude "**/SmokeTestRunner.class"
 }
 
 // ─── Gradle Wrapper ───────────────────────────────────────────────────────────
