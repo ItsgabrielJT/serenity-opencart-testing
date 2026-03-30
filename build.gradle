@@ -76,8 +76,8 @@ test {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
     }
-    // Parallel execution
-    maxParallelForks = 4
+    // Parallel execution - Solo una prueba a la vez
+    maxParallelForks = 1
     forkEvery = 1
 }
 
