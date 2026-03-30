@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.34'
 }
 
 group = 'com.company.automation'
@@ -15,7 +16,7 @@ repositories {
 }
 
 ext {
-    serenityCoreVersion       = '4.1.4'
+    serenityCoreVersion       = '4.2.34'
     cucumberVersion           = '7.15.0'
     restAssuredVersion        = '5.4.0'
     jacksonVersion            = '2.16.1'
@@ -72,6 +73,8 @@ dependencies {
 test {
     useJUnit()
     systemProperties System.properties
+    outputs.upToDateWhen { false }
+    finalizedBy aggregate
     testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
@@ -80,11 +83,10 @@ test {
     // Parallel execution - Solo una prueba a la vez
     maxParallelForks = 1
     forkEvery = 1
-    
-    // Excluir runners para evitar ejecuciones múltiples
-    // Solo APIRunner se ejecuta siempre
-    exclude "**/TestSuiteRunner.class"
-    exclude "**/SmokeTestRunner.class"
+}
+
+clean {
+    delete 'target'
 }
 
 // ─── Gradle Wrapper ───────────────────────────────────────────────────────────
