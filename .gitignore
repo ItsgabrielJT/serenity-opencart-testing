@@ -1,0 +1,25 @@
+# Archivos generados por la build — no versionar
+target/
+build/
+.gradle/
+
+# Reportes Serenity
+target/serenity-reports/
+target/cucumber-reports/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials — NUNCA versionar
+db.properties
+*.env
