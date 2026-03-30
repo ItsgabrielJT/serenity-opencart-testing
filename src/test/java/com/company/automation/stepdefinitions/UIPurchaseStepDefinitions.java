@@ -2,23 +2,18 @@ package com.company.automation.stepdefinitions;
 
 import com.company.automation.models.CustomerData;
 import com.company.automation.questions.web.TheOrderConfirmationMessage;
-import com.company.automation.questions.web.TheProductsInCart;
 import com.company.automation.tasks.web.*;
-import com.company.automation.utils.FakerDataGenerator;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
 import net.serenitybdd.screenplay.Actor;
-import net.serenitybdd.screenplay.GivenWhenThen;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Map;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
 
 public class UIPurchaseStepDefinitions {
 
@@ -77,76 +72,6 @@ public class UIPurchaseStepDefinitions {
                 AddProductToCart.named(productName)
         );
     }
-
-    @When("the customer clicks the cart button in the header")
-    public void theCustomerClicksTheCartButtonInTheHeader() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.By cartButtonSelector = 
-                    org.openqa.selenium.By.cssSelector("#cart button[data-toggle='dropdown']");
-            
-            driver.findElement(cartButtonSelector).click();
-            System.out.println("✓ Cart button clicked to open popover");
-            
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking cart button: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to click cart button", e);
-        }
-    }
-
-    @Then("the cart popover should display")
-    public void theCartPopoverShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            
-            org.openqa.selenium.WebElement checkoutLink = driver.findElement(
-                    org.openqa.selenium.By.xpath("//div[@id='cart']//ul//p[@class='text-right']//a[contains(@href, 'checkout/checkout')]")
-            );
-            
-            if (checkoutLink != null) {
-                System.out.println("✓ Cart popover is displayed (found checkout button)");
-            }
-            
-            Thread.sleep(1000);
-        } catch (org.openqa.selenium.NoSuchElementException e) {
-            System.err.println("✗ Checkout button not found in popover: " + e.getMessage());
-            throw new RuntimeException("Cart popover did not display - checkout button not found", e);
-        } catch (Exception e) {
-            System.err.println("✗ Cart popover did not display: " + e.getMessage());
-            throw new RuntimeException("Cart popover did not display", e);
-        }
-    }
-
-    @When("the customer clicks the checkout button in the cart popover")
-    public void theCustomerClicksTheCheckoutButtonInTheCartPopover() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            
-            org.openqa.selenium.By checkoutSelector = 
-                    org.openqa.selenium.By.xpath(
-                        "//div[@id='cart']//ul//a[contains(@href, 'checkout/checkout')]"
-                    );
-            
-            org.openqa.selenium.WebElement checkoutButton = driver.findElement(checkoutSelector);
-            System.out.println("✓ Found checkout button in popover");
-            
-            Thread.sleep(500);
-            checkoutButton.click();
-            System.out.println("✓ Checkout button clicked");
-            
-            Thread.sleep(3000);
-        } catch (org.openqa.selenium.NoSuchElementException e) {
-            System.err.println("✗ Checkout button not found in popover: " + e.getMessage());
-            throw new RuntimeException("Failed to find checkout button in cart popover", e);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking checkout button in popover: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to click checkout button in cart popover", e);
-        }
-    }
-
 
     @When("the customer navigates to checkout via shopping cart")
     public void theCustomerNavigatesToCheckoutViaShoppingCart() {
@@ -381,53 +306,6 @@ public class UIPurchaseStepDefinitions {
         }
     }
 
-    @When("the customer views the shopping cart")
-    public void theCustomerViewsTheShoppingCart() {
-        try {
-            WebDriver driver = OnStage.theActorInTheSpotlight()
-                                       .abilityTo(BrowseTheWeb.class)
-                                       .getDriver();
-            sharedWebDriver = driver; // Guardar por si acaso
-            driver.navigate().to("http://opencart.abstracta.us/index.php?route=checkout/cart");
-        } catch (NullPointerException e) {
-            if (sharedWebDriver != null) {
-                sharedWebDriver.navigate().to("http://opencart.abstracta.us/index.php?route=checkout/cart");
-            } else {
-                throw e;
-            }
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Then("the cart should contain {string}")
-    public void theCartShouldContain(String productName) {
-        customer().should(
-                seeThat(TheProductsInCart.now(), hasItem(containsString(productName)))
-        );
-    }
-
-    @When("the customer proceeds to checkout")
-    public void theCustomerProceedsToCheckout() {
-        try {
-            customer().attemptsTo(
-                    ProceedToCheckout.now()
-            );
-        } catch (NullPointerException e) {
-            getAndPreserveWebDriver().navigate().to("http://opencart.abstracta.us/index.php?route=checkout/checkout");
-            try { Thread.sleep(2000); } catch (InterruptedException ex) { Thread.currentThread().interrupt(); }
-        }
-        try { Thread.sleep(3000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        try {
-            sharedWebDriver = OnStage.theActorInTheSpotlight()
-                                      .abilityTo(BrowseTheWeb.class)
-                                      .getDriver();
-        } catch (Exception ignored) {}
-    }
-
     @When("the customer fills in the billing details with:")
     public void theCustomerFillsInTheBillingDetailsWith(DataTable dataTable) {
         Map<String, String> data = dataTable.asMap(String.class, String.class);
@@ -445,20 +323,6 @@ public class UIPurchaseStepDefinitions {
 
         customer().attemptsTo(
                 FillBillingDetails.using(customerData)
-        );
-    }
-
-    @When("the customer fills the billing form with generated data")
-    public void theCustomerFillsTheBillingFormWithGeneratedData() {
-        customer().attemptsTo(
-                FillBillingDetails.using(FakerDataGenerator.randomCustomer())
-        );
-    }
-
-    @When("the customer completes the remaining checkout steps")
-    public void theCustomerCompletesTheRemainingCheckoutSteps() {
-        customer().attemptsTo(
-                CompleteCheckoutSteps.now()
         );
     }
 

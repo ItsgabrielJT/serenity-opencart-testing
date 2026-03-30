@@ -1,6 +1,6 @@
 # Serenity BDD — OpenCart Enterprise Automation Framework
 
-Framework de automatización QA empresarial construido con **Java + Serenity BDD + Screenplay Pattern**.
+Framework de automatizacion QA enfocado en el flujo web de compra de OpenCart, construido con **Java + Serenity BDD + Screenplay Pattern**.
 
 ---
 
@@ -9,14 +9,10 @@ Framework de automatización QA empresarial construido con **Java + Serenity BDD
 | Tecnología           | Versión  | Uso                                  |
 |----------------------|----------|--------------------------------------|
 | Java                 | 17       | Lenguaje base                        |
-| Serenity BDD         | 4.1.4    | Orquestador + Reportes               |
-| Screenplay Pattern   | 4.1.4    | Arquitectura de actores              |
+| Serenity BDD         | 4.2.34   | Orquestador + Reportes               |
+| Screenplay Pattern   | 4.2.34   | Arquitectura de actores              |
 | Cucumber             | 7.15.0   | BDD / Gherkin                        |
 | Gradle               | 8.5      | Build tool                           |
-| REST Assured         | 5.4.0    | Pruebas API                          |
-| HikariCP + JDBC      | 5.1.0    | Validación base de datos             |
-| Jackson              | 2.16.1   | Serialización JSON/CSV               |
-| JavaFaker            | 1.0.2    | Generación de datos de prueba        |
 | Chrome WebDriver     | auto     | Automatización web (Serenity auto-dl)|
 
 ---
@@ -25,8 +21,6 @@ Framework de automatización QA empresarial construido con **Java + Serenity BDD
 
 ```text
 src/test/java/com/company/automation/
-├── abilities/          # Capacidades de los actores (Web, API, DB)
-├── config/             # Configuración de infraestructura (DB/Web)
 ├── models/             # POJOs de datos de negocio
 ├── tasks/
 │   └── web/            # Tasks de interfaz web (Screenplay)
@@ -35,13 +29,11 @@ src/test/java/com/company/automation/
 ├── ui/
 │   └── pages/          # UI Targets por página
 ├── stepdefinitions/    # Step Definitions Cucumber + Hooks
-├── runners/            # JUnit Runners (TestSuiteRunner, WebUIRunner)
-└── utils/              # Utilidades (Faker, TestDataLoader, ConfigReader)
+└── runners/            # JUnit Runner web (WebUIRunner)
 
 src/test/resources/
 ├── features/
 │   └── web/            # ui_purchase.feature
-├── testdata/           # users.json, products.csv
 ├── serenity.conf       # Configuración Serenity
 └── cucumber.properties # Configuración Cucumber
 ```
@@ -65,13 +57,11 @@ Este comando ejecuta la suite configurada por defecto en cada invocación. La ta
 ### Por runner específico
 ```bash
 ./gradlew test --tests "com.company.automation.runners.WebUIRunner" 
-./gradlew test --tests "com.company.automation.runners.TestSuiteRunner" 
 ```
 
-Runners disponibles actualmente:
+Runner disponible actualmente:
 
 - `WebUIRunner`: ejecuta los escenarios etiquetados con `@ui`.
-- `TestSuiteRunner`: ejecuta la suite general con exclusión de `@ui` y `@wip`.
 
 ### Headless (CI)
 ```bash
@@ -90,6 +80,8 @@ Runners disponibles actualmente:
 | `@ui`        | Pruebas de interfaz web (E2E)            |
 
 *(Nota: los tags de api, db, smoke, regression se añadirán conforme se expandan las pruebas de esos bloques).*
+
+Actualmente el proyecto fue depurado para conservar unicamente el flujo web activo.
 
 ---
 
@@ -120,6 +112,6 @@ Nota:
 - **Single Responsibility**: cada clase hace una sola cosa
 - **Open/Closed**: extensible sin modificar código existente
 - **Dependency Inversion**: Tasks dependen de Models, no de valores hard-coded
-- **DRY**: FakerDataGenerator y TestDataLoader centralizan generación de datos
+- **DRY**: el proyecto conserva solo las clases necesarias para la suite web actual
 - **High Cohesion**: packages agrupados por responsabilidad funcional
 - **Low Coupling**: Abilities, Tasks y Questions son independientes entre sí

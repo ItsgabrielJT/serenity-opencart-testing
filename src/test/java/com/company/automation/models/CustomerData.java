@@ -1,36 +1,23 @@
 package com.company.automation.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerData {
 
-    @JsonProperty("firstName")
     private String firstName;
 
-    @JsonProperty("lastName")
     private String lastName;
 
-    @JsonProperty("email")
     private String email;
 
-    @JsonProperty("telephone")
     private String telephone;
 
-    @JsonProperty("address")
     private String address;
 
-    @JsonProperty("city")
     private String city;
 
-    @JsonProperty("postcode")
     private String postcode;
 
-    @JsonProperty("country")
     private String country;
 
-    @JsonProperty("region")
     private String region;
 
     public CustomerData() {}

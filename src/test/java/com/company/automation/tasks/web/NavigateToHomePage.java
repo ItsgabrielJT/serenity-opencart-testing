@@ -1,6 +1,4 @@
 package com.company.automation.tasks.web;
-
-import com.company.automation.ui.pages.HomePageTargets;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Open;

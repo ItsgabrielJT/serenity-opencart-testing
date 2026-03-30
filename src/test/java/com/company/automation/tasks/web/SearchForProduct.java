@@ -6,7 +6,6 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 import net.serenitybdd.screenplay.annotations.Subject;
-import org.openqa.selenium.Keys;
 
 @Subject("search for '#product'")
 public class SearchForProduct implements Task {
