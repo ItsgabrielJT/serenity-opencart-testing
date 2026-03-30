@@ -518,9 +518,36 @@ public class UIPurchaseStepDefinitions {
 
     @When("the customer confirms the order")
     public void theCustomerConfirmsTheOrder() {
-        customer().attemptsTo(
-                ConfirmOrder.now()
-        );
+        try {
+            WebDriver driver = getAndPreserveWebDriver();
+            
+            // Step 1: Hacer click en el botón "Confirm Order" (button-confirm)
+            Thread.sleep(1000);
+            String clickScript = 
+                "var confirmBtn = document.getElementById('button-confirm');" +
+                "if (confirmBtn) { confirmBtn.click(); return true; } " +
+                "else { return false; }";
+            
+            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
+            if (result != null && (boolean) result) {
+                System.out.println("✓ Confirm Order button clicked");
+            } else {
+                System.err.println("⚠ Confirm Order button not found");
+                throw new RuntimeException("Confirm Order button not found");
+            }
+            
+            // Step 2: Esperar a que la página de success cargue
+            Thread.sleep(3000);
+            org.openqa.selenium.support.ui.WebDriverWait wait = 
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("success"));
+            System.out.println("✓ Successfully navigated to order confirmation page");
+            
+        } catch (Exception e) {
+            System.err.println("✗ Error confirming order: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to confirm order", e);
+        }
     }
 
     @Then("the order confirmation message should contain {string}")
