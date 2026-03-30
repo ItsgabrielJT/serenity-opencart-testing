@@ -3,13 +3,19 @@ package com.company.automation.stepdefinitions;
 import com.company.automation.models.CustomerData;
 import com.company.automation.questions.web.TheOrderConfirmationMessage;
 import com.company.automation.tasks.web.*;
+import com.company.automation.ui.pages.CheckoutPageTargets;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
-import org.openqa.selenium.WebDriver;
+import net.serenitybdd.screenplay.targets.Target;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
@@ -17,7 +23,7 @@ import static org.hamcrest.Matchers.containsString;
 
 public class UIPurchaseStepDefinitions {
 
-    private static WebDriver sharedWebDriver = null;
+    private static final String CHECKOUT_URL = "http://opencart.abstracta.us/index.php?route=checkout/checkout";
 
     private Actor customer() {
         try {
@@ -32,31 +38,77 @@ public class UIPurchaseStepDefinitions {
         return OnStage.theActorCalled("Customer");
     }
 
-    
-    private WebDriver getAndPreserveWebDriver() {
+    private void waitForVisible(Target target, String errorMessage) {
         try {
-            WebDriver driver = OnStage.theActorInTheSpotlight()
-                                       .abilityTo(BrowseTheWeb.class)
-                                       .getDriver();
-            sharedWebDriver = driver;
-            return driver;
-        } catch (NullPointerException e) {
-            if (sharedWebDriver != null) {
-                return sharedWebDriver;
-            }
-            throw e;
+            new WebDriverWait(customer().abilityTo(BrowseTheWeb.class).getDriver(), Duration.ofSeconds(10))
+                    .until(ExpectedConditions.visibilityOf(target.resolveFor(customer())));
+        } catch (Exception e) {
+            throw new RuntimeException(errorMessage, e);
+        }
+    }
+
+    private void waitForUrl(String fragment, String errorMessage) {
+        try {
+            new WebDriverWait(customer().abilityTo(BrowseTheWeb.class).getDriver(), Duration.ofSeconds(10))
+                    .until(ExpectedConditions.urlContains(fragment));
+        } catch (Exception e) {
+            throw new RuntimeException(errorMessage, e);
+        }
+    }
+
+    private void clickButtonById(String buttonId, String errorMessage) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        Object clicked = ((JavascriptExecutor) customer().abilityTo(BrowseTheWeb.class).getDriver()).executeScript(
+                "var button = document.getElementById('" + buttonId + "');"
+                        + "if (button) { button.click(); return true; }"
+                        + "return false;"
+        );
+
+        if (!(clicked instanceof Boolean) || !((Boolean) clicked)) {
+            throw new RuntimeException(errorMessage);
+        }
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void ensureCheckboxChecked(String cssSelector, String errorMessage) {
+        Object checked = ((JavascriptExecutor) customer().abilityTo(BrowseTheWeb.class).getDriver()).executeScript(
+                "var checkbox = document.querySelector(\"" + cssSelector + "\");"
+                        + "if (checkbox && !checkbox.checked) { checkbox.click(); return true; }"
+                        + "if (checkbox && checkbox.checked) { return true; }"
+                        + "return false;"
+        );
+
+        if (!(checked instanceof Boolean) || !((Boolean) checked)) {
+            throw new RuntimeException(errorMessage);
+        }
+    }
+
+    private void selectGuestCheckoutOption() {
+        WebElement guestRadio = CheckoutPageTargets.GUEST_CHECKOUT_RADIO.resolveFor(customer());
+        if (!guestRadio.isSelected()) {
+            guestRadio.click();
+        }
+
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
     @Given("the customer is on the OpenCart home page")
     public void theCustomerIsOnTheOpenCartHomePage() {
-        Actor customer = OnStage.theActorCalled("Customer");
-        customer.attemptsTo(
-                NavigateToHomePage.now()
-        );
-        try {
-            sharedWebDriver = customer.abilityTo(BrowseTheWeb.class).getDriver();
-        } catch (Exception ignored) {}
+        OnStage.theActorCalled("Customer").attemptsTo(NavigateToHomePage.now());
     }
 
     @When("the customer searches for {string}")
@@ -75,235 +127,68 @@ public class UIPurchaseStepDefinitions {
 
     @When("the customer navigates to checkout via shopping cart")
     public void theCustomerNavigatesToCheckoutViaShoppingCart() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            
-            driver.navigate().to("http://opencart.abstracta.us/index.php?route=checkout/checkout");
-            System.out.println("✓ Navigated directly to checkout page via HTTP");
-            
-            Thread.sleep(2000);
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("checkout/checkout"));
-            System.out.println("✓ Navigated to checkout successfully");
-            
-        } catch (Exception e) {
-            System.err.println("✗ Error navigating to checkout: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to navigate to checkout", e);
-        }
+        customer().attemptsTo(NavigateToHomePage.at(CHECKOUT_URL));
     }
 
     @Then("the checkout page should display")
     public void theCheckoutPageShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("checkout"));
-            System.out.println("✓ Checkout page is displayed");
-        } catch (Exception e) {
-            throw new RuntimeException("Checkout page did not display", e);
-        }
+        waitForUrl("checkout", "Checkout page did not display");
     }
 
 
     @Then("the billing details section should display")
     public void theBillingDetailsSectionShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
-                    org.openqa.selenium.By.id("input-payment-firstname")
-            ));
-            System.out.println("✓ Billing details section is displayed");
-        } catch (Exception e) {
-            throw new RuntimeException("Billing details section did not display", e);
-        }
+        waitForVisible(CheckoutPageTargets.BILLING_FIRSTNAME, "Billing details section did not display");
     }
 
     @When("the customer clicks continue from billing details")
     public void theCustomerClicksContinueFromBillingDetails() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            Thread.sleep(1000);
-            String clickScript = 
-                "var button = document.getElementById('button-guest');" +
-                "if (button) { button.click(); return true; } " +
-                "else { return false; }";
-            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
-            if (result != null && (boolean) result) {
-                System.out.println("✓ Billing Details continue button clicked");
-            } else {
-                System.err.println("⚠ Billing Details continue button not found");
-            }
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking continue from billing details: " + e.getMessage());
-            throw new RuntimeException("Failed to click continue from billing details", e);
-        }
+        clickButtonById("button-guest", "Failed to click continue from billing details");
     }
 
     @Then("the delivery details section should display")
     public void theDeliveryDetailsSectionShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("checkout"));
-            System.out.println("✓ Delivery details section is displayed");
-        } catch (Exception e) {
-            throw new RuntimeException("Delivery details section did not display", e);
-        }
+        waitForUrl("checkout", "Delivery details section did not display");
     }
 
     @When("the customer clicks continue from delivery details")
     public void theCustomerClicksContinueFromDeliveryDetails() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            Thread.sleep(1000);
-            String clickScript = 
-                "var button = document.getElementById('button-guest-shipping');" +
-                "if (button) { button.click(); return true; } " +
-                "else { return false; }";
-            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
-            if (result != null && (boolean) result) {
-                System.out.println("✓ Delivery Details continue button clicked");
-            } else {
-                System.err.println("⚠ Delivery Details continue button not found");
-            }
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking continue from delivery details: " + e.getMessage());
-            throw new RuntimeException("Failed to click continue from delivery details", e);
-        }
+        clickButtonById("button-guest-shipping", "Failed to click continue from delivery details");
     }
 
     @When("the customer clicks continue from delivery method")
     public void theCustomerClicksContinueFromDeliveryMethod() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            Thread.sleep(1000);
-            String clickScript = 
-                "var button = document.getElementById('button-shipping-method');" +
-                "if (button) { button.click(); return true; } " +
-                "else { return false; }";
-            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
-            if (result != null && (boolean) result) {
-                System.out.println("✓ Delivery Method continue button clicked");
-            } else {
-                System.err.println("⚠ Delivery Method continue button not found");
-            }
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking continue from delivery method: " + e.getMessage());
-            throw new RuntimeException("Failed to click continue from delivery method", e);
-        }
+        clickButtonById("button-shipping-method", "Failed to click continue from delivery method");
     }
 
     @When("the customer agrees to the terms and conditions")
     public void theCustomerAgreesToTheTermsAndConditions() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            Thread.sleep(1000);
-            String clickScript = 
-                "var agreeCheckbox = document.querySelector(\"input[name='agree']\");" +
-                "if (agreeCheckbox && !agreeCheckbox.checked) { agreeCheckbox.click(); return true; } " +
-                "else if (agreeCheckbox && agreeCheckbox.checked) { return true; } " +
-                "else { return false; }";
-            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
-            if (result != null && (boolean) result) {
-                System.out.println("✓ Terms & Conditions checkbox checked");
-            } else {
-                System.err.println("⚠ Terms & Conditions checkbox not found");
-            }
-            Thread.sleep(500);
-        } catch (Exception e) {
-            System.err.println("✗ Error agreeing to terms and conditions: " + e.getMessage());
-            throw new RuntimeException("Failed to agree to terms and conditions", e);
-        }
+        ensureCheckboxChecked("input[name='agree']", "Failed to agree to terms and conditions");
     }
 
     @When("the customer clicks continue from payment method")
     public void theCustomerClicksContinueFromPaymentMethod() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            Thread.sleep(1000);
-            String clickScript = 
-                "var button = document.getElementById('button-payment-method');" +
-                "if (button) { button.click(); return true; } " +
-                "else { return false; }";
-            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
-            if (result != null && (boolean) result) {
-                System.out.println("✓ Payment Method continue button clicked");
-            } else {
-                System.err.println("⚠ Payment Method continue button not found");
-            }
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking continue from payment method: " + e.getMessage());
-            throw new RuntimeException("Failed to click continue from payment method", e);
-        }
+        clickButtonById("button-payment-method", "Failed to click continue from payment method");
     }
 
     @Then("the confirm order section should display")
     public void theConfirmOrderSectionShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
-                    org.openqa.selenium.By.id("button-confirm")
-            ));
-            System.out.println("✓ Confirm order section is displayed");
-        } catch (Exception e) {
-            throw new RuntimeException("Confirm order section did not display", e);
-        }
+        waitForVisible(CheckoutPageTargets.CONFIRM_ORDER_BUTTON, "Confirm order section did not display");
     }
 
     @Then("the order confirmation page should display")
     public void theOrderConfirmationPageShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("success"));
-            System.out.println("✓ Order confirmation page is displayed");
-        } catch (Exception e) {
-            throw new RuntimeException("Order confirmation page did not display", e);
-        }
+        waitForUrl("success", "Order confirmation page did not display");
     }
 
     @Then("the delivery method section should display")
     public void theDeliveryMethodSectionShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            
-            // Esperar a que estemos en la página de checkout (suficiente verificación)
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("checkout/checkout"));
-            System.out.println("✓ Delivery method section should be displayed (on checkout page)");
-        } catch (Exception e) {
-            throw new RuntimeException("Delivery method section did not display", e);
-        }
+        waitForUrl("checkout/checkout", "Delivery method section did not display");
     }
 
     @Then("the payment method section should display")
     public void thePaymentMethodSectionShouldDisplay() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            // Verificar que el checkbox de términos esté visible
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
-                    org.openqa.selenium.By.cssSelector("input[name='agree']")
-            ));
-            System.out.println("✓ Payment method section is displayed");
-        } catch (Exception e) {
-            throw new RuntimeException("Payment method section did not display", e);
-        }
+        waitForVisible(CheckoutPageTargets.TERMS_AND_CONDITIONS_CHECKBOX, "Payment method section did not display");
     }
 
     @When("the customer fills in the billing details with:")
@@ -328,34 +213,7 @@ public class UIPurchaseStepDefinitions {
 
     @When("the customer confirms the order")
     public void theCustomerConfirmsTheOrder() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            
-            Thread.sleep(1000);
-            String clickScript = 
-                "var confirmBtn = document.getElementById('button-confirm');" +
-                "if (confirmBtn) { confirmBtn.click(); return true; } " +
-                "else { return false; }";
-            
-            Object result = ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(clickScript);
-            if (result != null && (boolean) result) {
-                System.out.println("✓ Confirm Order button clicked");
-            } else {
-                System.err.println("⚠ Confirm Order button not found");
-                throw new RuntimeException("Confirm Order button not found");
-            }
-            
-            Thread.sleep(3000);
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("success"));
-            System.out.println("✓ Successfully navigated to order confirmation page");
-            
-        } catch (Exception e) {
-            System.err.println("✗ Error confirming order: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to confirm order", e);
-        }
+        clickButtonById("button-confirm", "Failed to confirm the order");
     }
 
     @Then("the order confirmation message should contain {string}")
@@ -369,51 +227,12 @@ public class UIPurchaseStepDefinitions {
 
     @When("the customer selects guest checkout")
     public void theCustomerSelectsGuestCheckout() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            
-            org.openqa.selenium.By guestRadioSelector = 
-                    org.openqa.selenium.By.cssSelector("input[name='account'][value='guest']");
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(guestRadioSelector));
-            
-            org.openqa.selenium.WebElement guestRadio = driver.findElement(guestRadioSelector);
-            if (!guestRadio.isSelected()) {
-                guestRadio.click();
-                System.out.println("✓ Guest Checkout radio button selected");
-            } else {
-                System.out.println("✓ Guest Checkout was already selected");
-            }
-            Thread.sleep(300);
-        } catch (Exception e) {
-            System.err.println("✗ Error selecting guest checkout: " + e.getMessage());
-            throw new RuntimeException("Failed to select guest checkout", e);
-        }
+        selectGuestCheckoutOption();
     }
 
     @When("the customer clicks continue from checkout options")
     public void theCustomerClicksContinueFromCheckoutOptions() {
-        try {
-            WebDriver driver = getAndPreserveWebDriver();
-            org.openqa.selenium.support.ui.WebDriverWait wait = 
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            
-            org.openqa.selenium.By continueButtonSelector = org.openqa.selenium.By.id("button-account");
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(continueButtonSelector));
-            
-            Thread.sleep(300);
-            driver.findElement(continueButtonSelector).click();
-            System.out.println("✓ Continue button from Checkout Options clicked");
-            
-            wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
-                    org.openqa.selenium.By.id("input-payment-firstname")
-            ));
-            System.out.println("✓ Billing Details section loaded");
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            System.err.println("✗ Error clicking continue from checkout options: " + e.getMessage());
-            throw new RuntimeException("Failed to click continue from checkout options", e);
-        }
+        clickButtonById("button-account", "Failed to click continue from checkout options");
+        waitForVisible(CheckoutPageTargets.BILLING_FIRSTNAME, "Billing details section did not display after checkout options");
     }
 }
