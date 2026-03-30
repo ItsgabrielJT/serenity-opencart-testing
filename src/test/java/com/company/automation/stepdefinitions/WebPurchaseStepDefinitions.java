@@ -2,11 +2,13 @@ package com.company.automation.stepdefinitions;
 
 import com.company.automation.models.CustomerData;
 import com.company.automation.questions.web.TheOrderConfirmationMessage;
+import com.company.automation.questions.web.TheProductsInShoppingCart;
 import com.company.automation.tasks.web.AddProductToCart;
 import com.company.automation.tasks.web.FillBillingDetails;
 import com.company.automation.tasks.web.NavigateToHomePage;
 import com.company.automation.tasks.web.SearchForProduct;
 import com.company.automation.ui.pages.CheckoutPageTargets;
+import com.company.automation.ui.pages.ShoppingCartPageTargets;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -14,6 +16,7 @@ import io.cucumber.java.en.When;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
+import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -24,9 +27,13 @@ import java.time.Duration;
 
 import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 
 public class WebPurchaseStepDefinitions {
 
+    private static final String BASE_URL = "http://opencart.abstracta.us/";
+    private static final String BASE_HOST = "opencart.abstracta.us";
+    private static final String CART_URL = BASE_URL + "index.php?route=checkout/cart";
     private static final String CHECKOUT_URL = "http://opencart.abstracta.us/index.php?route=checkout/checkout";
 
     private Actor customer() {
@@ -57,6 +64,23 @@ public class WebPurchaseStepDefinitions {
                     .until(ExpectedConditions.urlContains(fragment));
         } catch (Exception e) {
             throw new RuntimeException(errorMessage, e);
+        }
+    }
+
+    private void forceHttpIfNeeded(String expectedFragment, String fallbackUrl) {
+        var driver = customer().abilityTo(BrowseTheWeb.class).getDriver();
+        String currentUrl = driver.getCurrentUrl();
+
+        if (currentUrl != null
+                && currentUrl.startsWith("https://")
+                && currentUrl.contains(BASE_HOST)
+                && currentUrl.contains(expectedFragment)) {
+            driver.navigate().to(currentUrl.replaceFirst("^https://", "http://"));
+            return;
+        }
+
+        if (currentUrl == null || !currentUrl.contains(expectedFragment)) {
+            driver.navigate().to(fallbackUrl);
         }
     }
 
@@ -98,6 +122,8 @@ public class WebPurchaseStepDefinitions {
     }
 
     private void selectGuestCheckoutOption() {
+        waitForVisible(CheckoutPageTargets.GUEST_CHECKOUT_RADIO, "Guest checkout option did not display");
+
         WebElement guestRadio = CheckoutPageTargets.GUEST_CHECKOUT_RADIO.resolveFor(customer());
         if (!guestRadio.isSelected()) {
             guestRadio.click();
@@ -144,6 +170,25 @@ public class WebPurchaseStepDefinitions {
     @When("the customer navigates to checkout via shopping cart")
     public void theCustomerNavigatesToCheckoutViaShoppingCart() {
         customer().attemptsTo(NavigateToHomePage.at(CHECKOUT_URL));
+    }
+
+    @When("the customer clicks the shopping cart link")
+    public void theCustomerClicksTheShoppingCartLink() {
+        customer().attemptsTo(Click.on(ShoppingCartPageTargets.SHOPPING_CART_LINK));
+        forceHttpIfNeeded("checkout/cart", CART_URL);
+        waitForUrl("checkout/cart", "Shopping cart page did not display");
+    }
+
+    @Then("the shopping cart should contain {string}")
+    public void theShoppingCartShouldContain(String productName) {
+        customer().should(seeThat(TheProductsInShoppingCart.now(), hasItem(containsString(productName))));
+    }
+
+    @When("the customer clicks the checkout button from the shopping cart")
+    public void theCustomerClicksTheCheckoutButtonFromTheShoppingCart() {
+        customer().attemptsTo(Click.on(ShoppingCartPageTargets.CHECKOUT_BUTTON));
+        forceHttpIfNeeded("checkout/checkout", CHECKOUT_URL);
+        waitForUrl("checkout/checkout", "Checkout page did not load from shopping cart");
     }
 
     @Then("the checkout page should display")

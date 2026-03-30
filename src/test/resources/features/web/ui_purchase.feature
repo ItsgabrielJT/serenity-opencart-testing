@@ -12,7 +12,10 @@ Feature: OpenCart E2E Purchase Flow
     And the customer adds "MacBook" to the cart from the search results
     And the customer searches for "iPhone"
     And the customer adds "iPhone" to the cart from the search results
-    When the customer navigates to checkout via shopping cart
+    And the customer clicks the shopping cart link
+    Then the shopping cart should contain "MacBook"
+    And the shopping cart should contain "iPhone"
+    When the customer clicks the checkout button from the shopping cart
     Then the checkout page should display
     When the customer selects guest checkout
     And the customer clicks continue from checkout options
@@ -38,4 +41,4 @@ Feature: OpenCart E2E Purchase Flow
     Then the confirm order section should display
     When the customer confirms the order
     Then the order confirmation page should display
-  Then the order confirmation message should contain "Your order has been placed"
+    And the order confirmation message should contain "Your order has been placed"
