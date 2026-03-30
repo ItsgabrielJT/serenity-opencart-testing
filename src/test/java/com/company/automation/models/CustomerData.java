@@ -3,14 +3,6 @@ package com.company.automation.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * CustomerData
- *
- * Modelo de datos del cliente para el flujo de checkout.
- * Soporta construcción fluida (builder pattern) para Data Driven Testing.
- *
- * Principio SOLID: Single Responsibility – solo representa datos del cliente.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerData {
 
@@ -41,10 +33,8 @@ public class CustomerData {
     @JsonProperty("region")
     private String region;
 
-    // ─── Constructor vacío para deserialización Jackson ───────────────────────
     public CustomerData() {}
 
-    // ─── Builder ─────────────────────────────────────────────────────────────
     public static Builder builder() {
         return new Builder();
     }
@@ -65,7 +55,6 @@ public class CustomerData {
         public CustomerData build() { return instance; }
     }
 
-    // ─── Getters ─────────────────────────────────────────────────────────────
     public String getFirstName()  { return firstName; }
     public String getLastName()   { return lastName; }
     public String getEmail()      { return email; }

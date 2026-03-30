@@ -3,15 +3,6 @@ package com.company.automation.ui.pages;
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
-/**
- * HomePage Targets
- *
- * Contiene todos los locators de la página principal de OpenCart.
- * Los XPath/CSS se deben completar inspeccionando el HTML real del sitio.
- *
- * Principio SOLID: Single Responsibility – cada clase UI solo define
- * los targets de su propia página.
- */
 public class HomePageTargets {
 
     private HomePageTargets() {}

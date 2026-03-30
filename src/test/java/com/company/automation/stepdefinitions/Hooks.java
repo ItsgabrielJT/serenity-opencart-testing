@@ -8,14 +8,6 @@ import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.rest.abilities.CallAnApi;
 
-/**
- * Hooks
- *
- * Configuración global de Cucumber para el framework Screenplay.
- *
- * Usa OnlineCast que integra automáticamente BrowseTheWeb con el WebDriver
- * gestionado por Serenity, sin necesidad de configurarlo manualmente.
- */
 public class Hooks {
 
     @Before

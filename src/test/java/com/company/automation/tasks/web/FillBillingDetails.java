@@ -11,17 +11,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import org.openqa.selenium.WebDriver;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 
-/**
- * Task: FillBillingDetails
- *
- * Completa el formulario de datos de facturación del checkout.
- * Usa JavaScript como fallback para formularios cargados por AJAX.
- *
- * Principio SOLID:
- *   - Dependency Inversion: depende del modelo CustomerData, no de valores
- *     hard-codeados, lo que permite Data Driven Testing.
- *   - Single Responsibility: solo rellena el formulario de billing.
- */
 @Subject("fill in billing details for '#customer'")
 public class FillBillingDetails implements Task {
 
@@ -40,10 +29,8 @@ public class FillBillingDetails implements Task {
         WebDriver driver = actor.abilityTo(BrowseTheWeb.class).getDriver();
         
         try {
-            // Esperar a que el formulario de billing se cargue por AJAX
             Thread.sleep(2000);
             
-            // Usar JavaScript para rellenar los campos
             String jsScript = 
                 "document.getElementById('input-payment-firstname').value = '" + escapeQuotes(customer.getFirstName()) + "';" +
                 "document.getElementById('input-payment-lastname').value = '" + escapeQuotes(customer.getLastName()) + "';" +
@@ -58,7 +45,6 @@ public class FillBillingDetails implements Task {
             
             Thread.sleep(500);
             
-            // Seleccionar país (más complejo porque es un select)
             try {
                 String countryScript = 
                     "var countrySelect = document.getElementById('input-payment-country');" +
@@ -79,7 +65,6 @@ public class FillBillingDetails implements Task {
             
             Thread.sleep(1000);
             
-            // Seleccionar región/estado
             try {
                 String regionScript = 
                     "var regionSelect = document.getElementById('input-payment-zone');" +

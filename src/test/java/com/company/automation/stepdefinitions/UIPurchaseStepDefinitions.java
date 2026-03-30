@@ -20,23 +20,11 @@ import static net.serenitybdd.screenplay.GivenWhenThen.seeThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 
-/**
- * UIPurchaseStepDefinitions
- *
- * Step Definitions para el flujo E2E de compra en OpenCart Web UI.
- *
- * Principio Screenplay: Los step definitions son coordinadores delgados.
- * No contienen lógica de interacción con la UI; delegan en Tasks y Questions.
- *
- * Principio DRY: Reutiliza tasks y questions creadas una sola vez.
- */
 public class UIPurchaseStepDefinitions {
 
-    // Almacenar el WebDriver a nivel de clase para evitar perderlo entre pasos
     private static WebDriver sharedWebDriver = null;
 
     private Actor customer() {
-        // Intentar obtener el actor que ya está en el spotlight
         try {
             Actor actor = OnStage.theActorInTheSpotlight();
             if (actor != null) {
@@ -46,15 +34,10 @@ public class UIPurchaseStepDefinitions {
             // Ignorar - El actor no está en el spotlight aún
         }
         
-        // Si no hay actor en el spotlight, obtener o crear uno
-        // OnlineCast() agregará las habilidades automáticamente
         return OnStage.theActorCalled("Customer");
     }
 
-    /**
-     * Helper para preservar y recuperar el WebDriver entre pasos
-     * Serenity a veces pierde el contexto entre pasos, así que cachéamos el WebDriver
-     */
+    
     private WebDriver getAndPreserveWebDriver() {
         try {
             WebDriver driver = OnStage.theActorInTheSpotlight()
@@ -72,12 +55,10 @@ public class UIPurchaseStepDefinitions {
 
     @Given("the customer is on the OpenCart home page")
     public void theCustomerIsOnTheOpenCartHomePage() {
-        // Crear y poner al actor en el spotlight
         Actor customer = OnStage.theActorCalled("Customer");
         customer.attemptsTo(
                 NavigateToHomePage.now()
         );
-        // Guardar el WebDriver para acceso en pasos posteriores
         try {
             sharedWebDriver = customer.abilityTo(BrowseTheWeb.class).getDriver();
         } catch (Exception ignored) {}
@@ -97,21 +78,16 @@ public class UIPurchaseStepDefinitions {
         );
     }
 
-    // ─── Pasos del Carrito (Popover) ── ──────────────────────────────────────
-
     @When("the customer clicks the cart button in the header")
     public void theCustomerClicksTheCartButtonInTheHeader() {
         try {
             WebDriver driver = getAndPreserveWebDriver();
-            // Buscar el botón del carrito
             org.openqa.selenium.By cartButtonSelector = 
                     org.openqa.selenium.By.cssSelector("#cart button[data-toggle='dropdown']");
             
-            // Simplemente hacer click sin esperas complejas
             driver.findElement(cartButtonSelector).click();
             System.out.println("✓ Cart button clicked to open popover");
             
-            // Esperar a que se abra el popover
             Thread.sleep(2000);
         } catch (Exception e) {
             System.err.println("✗ Error clicking cart button: " + e.getMessage());
@@ -125,7 +101,6 @@ public class UIPurchaseStepDefinitions {
         try {
             WebDriver driver = getAndPreserveWebDriver();
             
-            // Buscar el botón de Checkout dentro del popover - si lo encontramos, es que el popover está abierto
             org.openqa.selenium.WebElement checkoutLink = driver.findElement(
                     org.openqa.selenium.By.xpath("//div[@id='cart']//ul//p[@class='text-right']//a[contains(@href, 'checkout/checkout')]")
             );
@@ -149,22 +124,18 @@ public class UIPurchaseStepDefinitions {
         try {
             WebDriver driver = getAndPreserveWebDriver();
             
-            // Selector más flexible para el link de Checkout DENTRO del popover
             org.openqa.selenium.By checkoutSelector = 
                     org.openqa.selenium.By.xpath(
                         "//div[@id='cart']//ul//a[contains(@href, 'checkout/checkout')]"
                     );
             
-            // Buscar y clickear sin múltiples waits
             org.openqa.selenium.WebElement checkoutButton = driver.findElement(checkoutSelector);
             System.out.println("✓ Found checkout button in popover");
             
-            // Pequeña pausa antes de clickear
             Thread.sleep(500);
             checkoutButton.click();
             System.out.println("✓ Checkout button clicked");
             
-            // Pausa para que la página cargue
             Thread.sleep(3000);
         } catch (org.openqa.selenium.NoSuchElementException e) {
             System.err.println("✗ Checkout button not found in popover: " + e.getMessage());
@@ -176,7 +147,6 @@ public class UIPurchaseStepDefinitions {
         }
     }
 
-    // ─── Pasos de Navegación por Shopping Cart Link (Nav Superior) ───────────
 
     @When("the customer navigates to checkout via shopping cart")
     public void theCustomerNavigatesToCheckoutViaShoppingCart() {
@@ -185,11 +155,9 @@ public class UIPurchaseStepDefinitions {
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
             
-            // Step 1: Navegar directamente a checkout usando HTTP para evitar errores de certificado
             driver.navigate().to("http://opencart.abstracta.us/index.php?route=checkout/checkout");
             System.out.println("✓ Navigated directly to checkout page via HTTP");
             
-            // Step 2: Esperar a que la página de checkout cargue
             Thread.sleep(2000);
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains("checkout/checkout"));
             System.out.println("✓ Navigated to checkout successfully");
@@ -214,13 +182,11 @@ public class UIPurchaseStepDefinitions {
         }
     }
 
-    // ─── Pasos de Guest Checkout ───────────────────────────────────────────
 
     @Then("the billing details section should display")
     public void theBillingDetailsSectionShouldDisplay() {
         try {
             WebDriver driver = getAndPreserveWebDriver();
-            // Verificar que al menos un campo de billing esté visible
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
@@ -257,7 +223,6 @@ public class UIPurchaseStepDefinitions {
     @Then("the delivery details section should display")
     public void theDeliveryDetailsSectionShouldDisplay() {
         try {
-            // Delivery Details no tiene campos visibles, así que verificar que la página sigue en checkout
             WebDriver driver = getAndPreserveWebDriver();
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
@@ -361,7 +326,6 @@ public class UIPurchaseStepDefinitions {
     public void theConfirmOrderSectionShouldDisplay() {
         try {
             WebDriver driver = getAndPreserveWebDriver();
-            // Verificar que el botón "Confirm Order" esté visible
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
@@ -417,8 +381,6 @@ public class UIPurchaseStepDefinitions {
         }
     }
 
-    // ─── Pasos Intermedios ────────────────────────────────────────────────────
-
     @When("the customer views the shopping cart")
     public void theCustomerViewsTheShoppingCart() {
         try {
@@ -455,13 +417,10 @@ public class UIPurchaseStepDefinitions {
                     ProceedToCheckout.now()
             );
         } catch (NullPointerException e) {
-            // Fallback: Si el contexto se pierde, navegar al checkout usando HTTP (no HTTPS para evitar problemas de certificado)
             getAndPreserveWebDriver().navigate().to("http://opencart.abstracta.us/index.php?route=checkout/checkout");
             try { Thread.sleep(2000); } catch (InterruptedException ex) { Thread.currentThread().interrupt(); }
         }
-        // Aguardar a que la página de checkout cargue completamente
         try { Thread.sleep(3000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-        // Guardar WebDriver para los próximos pasos
         try {
             sharedWebDriver = OnStage.theActorInTheSpotlight()
                                       .abilityTo(BrowseTheWeb.class)
@@ -508,7 +467,6 @@ public class UIPurchaseStepDefinitions {
         try {
             WebDriver driver = getAndPreserveWebDriver();
             
-            // Step 1: Hacer click en el botón "Confirm Order" (button-confirm)
             Thread.sleep(1000);
             String clickScript = 
                 "var confirmBtn = document.getElementById('button-confirm');" +
@@ -523,7 +481,6 @@ public class UIPurchaseStepDefinitions {
                 throw new RuntimeException("Confirm Order button not found");
             }
             
-            // Step 2: Esperar a que la página de success cargue
             Thread.sleep(3000);
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
@@ -545,7 +502,6 @@ public class UIPurchaseStepDefinitions {
         );
     }
 
-    // ─── Pasos para Checkout Options (Step 1) ────────────────────────────────
 
     @When("the customer selects guest checkout")
     public void theCustomerSelectsGuestCheckout() {
@@ -554,13 +510,11 @@ public class UIPurchaseStepDefinitions {
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
             
-            // Esperar a que el radio button de guest checkout esté disponible
             org.openqa.selenium.By guestRadioSelector = 
                     org.openqa.selenium.By.cssSelector("input[name='account'][value='guest']");
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(guestRadioSelector));
             
             org.openqa.selenium.WebElement guestRadio = driver.findElement(guestRadioSelector);
-            // Seleccionar el radio button si no está ya seleccionado
             if (!guestRadio.isSelected()) {
                 guestRadio.click();
                 System.out.println("✓ Guest Checkout radio button selected");
@@ -581,7 +535,6 @@ public class UIPurchaseStepDefinitions {
             org.openqa.selenium.support.ui.WebDriverWait wait = 
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
             
-            // Esperar a que el botón Continue esté disponible
             org.openqa.selenium.By continueButtonSelector = org.openqa.selenium.By.id("button-account");
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(continueButtonSelector));
             
@@ -589,7 +542,6 @@ public class UIPurchaseStepDefinitions {
             driver.findElement(continueButtonSelector).click();
             System.out.println("✓ Continue button from Checkout Options clicked");
             
-            // Esperar a que se cargue la sección de Billing Details
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(
                     org.openqa.selenium.By.id("input-payment-firstname")
             ));

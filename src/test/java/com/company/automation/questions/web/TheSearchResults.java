@@ -10,11 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Question: TheSearchResults
- *
- * Recupera los nombres de los productos listados en la página de resultados.
- */
 @Subject("the search results displayed on the page")
 public class TheSearchResults implements Question<List<String>> {
 

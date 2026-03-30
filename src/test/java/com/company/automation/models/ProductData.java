@@ -3,12 +3,6 @@ package com.company.automation.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * ProductData
- *
- * Modelo de datos para productos cargados desde products.csv.
- * Usado en Data Driven Testing con TestDataLoader.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductData {
 

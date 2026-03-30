@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import org.openqa.selenium.WebDriver;
 
-/**
- * Task: ClickContinueDeliveryMethod
- *
- * Hace clic en el botón "Continue" de la sección Delivery Method (Step 4).
- */
 @Subject("click continue button from delivery method")
 public class ClickContinueDeliveryMethod implements Task {
 

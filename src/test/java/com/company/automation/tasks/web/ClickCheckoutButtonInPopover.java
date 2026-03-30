@@ -12,12 +12,6 @@ import org.openqa.selenium.By;
 
 import java.time.Duration;
 
-/**
- * Task: ClickCheckoutButtonInPopover
- *
- * Hace clic en el botón "Checkout" dentro del popover del carrito.
- * Asume que el popover ya está abierto.
- */
 @Subject("click the checkout button in the cart popover")
 public class ClickCheckoutButtonInPopover implements Task {
 

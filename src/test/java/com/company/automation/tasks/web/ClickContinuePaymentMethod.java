@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import org.openqa.selenium.WebDriver;
 
-/**
- * Task: ClickContinuePaymentMethod
- *
- * Hace clic en el botón "Continue" de la sección Payment Method (Step 5).
- */
 @Subject("click continue button from payment method")
 public class ClickContinuePaymentMethod implements Task {
 

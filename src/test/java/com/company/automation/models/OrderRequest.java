@@ -5,12 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-/**
- * OrderRequest
- *
- * Modelo de datos para la petición de creación de orden en la API.
- * Adaptado al contrato esperado por la API de OpenCart.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderRequest {
 
@@ -59,7 +53,6 @@ public class OrderRequest {
         public OrderRequest build() { return instance; }
     }
 
-    // Getters
     public Integer getCustomerId()          { return customerId; }
     public String getFirstName()            { return firstName; }
     public String getLastName()             { return lastName; }
@@ -68,8 +61,6 @@ public class OrderRequest {
     public List<OrderProduct> getProducts() { return products; }
     public AddressData getPaymentAddress()  { return paymentAddress; }
     public AddressData getShippingAddress() { return shippingAddress; }
-
-    // ─── Inner classes ────────────────────────────────────────────────────────
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class OrderProduct {

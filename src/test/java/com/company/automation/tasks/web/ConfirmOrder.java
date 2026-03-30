@@ -8,12 +8,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import org.openqa.selenium.WebDriver;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 
-/**
- * Task: ConfirmOrder
- *
- * Confirma la orden haciendo clic en el botón final de checkout (Step 6).
- * Usa JavaScript como fallback.
- */
 @Subject("confirm the order")
 public class ConfirmOrder implements Task {
 
@@ -30,7 +24,6 @@ public class ConfirmOrder implements Task {
         try {
             Thread.sleep(1000);
             
-            // Usar JavaScript para clickear el botón de confirmar
             String clickScript = 
                 "var confirmBtn = document.getElementById('button-confirm');" +
                 "if (confirmBtn) { confirmBtn.click(); return true; } " +

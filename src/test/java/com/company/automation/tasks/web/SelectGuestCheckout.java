@@ -8,12 +8,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import org.openqa.selenium.WebDriver;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 
-/**
- * Task: SelectGuestCheckout
- *
- * Selecciona la opción "Guest Checkout" en OpenCart.
- * Usa JavaScript injection como método principal para evitar problemas de timing.
- */
 @Subject("select guest checkout option")
 public class SelectGuestCheckout implements Task {
 
@@ -28,10 +22,8 @@ public class SelectGuestCheckout implements Task {
         WebDriver driver = actor.abilityTo(BrowseTheWeb.class).getDriver();
         
         try {
-            // Esperar a que el radio button esté presente
             Thread.sleep(1000);
             
-            // Usar JavaScript para clickear el radio button de guest
             String scriptClickRadio = 
                 "var guestRadio = document.querySelector(\"input[name='account'][value='guest']\");" +
                 "if (guestRadio) { guestRadio.click(); } " +
@@ -42,7 +34,6 @@ public class SelectGuestCheckout implements Task {
             System.out.println("✓ Guest checkout radio clicked with JavaScript");
             Thread.sleep(500);
             
-            // Clickear el botón continue
             String scriptClickButton = 
                 "var continueBtn = document.getElementById('button-account');" +
                 "if (continueBtn) { continueBtn.click(); } " +
@@ -52,7 +43,6 @@ public class SelectGuestCheckout implements Task {
             
             System.out.println("✓ Continue button clicked with JavaScript");
             
-            // Esperar a que se cargue el formulario de billing (AJAX)
             Thread.sleep(3000);
             
         } catch (Exception e) {

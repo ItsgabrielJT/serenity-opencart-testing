@@ -6,12 +6,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import org.openqa.selenium.WebDriver;
 
-/**
- * Task: ClickContinueGuestCheckout
- *
- * Hace clic en el botón "Continue" de la sección Guest Checkout (Step 1).
- * Asume que el radio button de "Guest Checkout" ya está seleccionado.
- */
 @Subject("click continue button from guest checkout options")
 public class ClickContinueGuestCheckout implements Task {
 

@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import org.openqa.selenium.WebDriver;
 
-/**
- * Task: AgreeToTermsAndConditions
- *
- * Hace clic en el checkbox "Agree to Terms & Conditions" en la sección Payment Method (Step 5).
- */
 @Subject("agree to the terms and conditions")
 public class AgreeToTermsAndConditions implements Task {
 

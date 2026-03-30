@@ -8,12 +8,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import org.openqa.selenium.WebDriver;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 
-/**
- * Task: SelectGuestCheckoutOption
- *
- * Solo selecciona el radio button de "Guest Checkout".
- * No hace click en el botón continue.
- */
 @Subject("select guest checkout option")
 public class SelectGuestCheckoutOption implements Task {
 

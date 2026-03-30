@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.annotations.Subject;
 
-/**
- * Task: ClickCartButton
- *
- * Hace clic en el icono del carrito en la cabecera para abrir el popover del carrito.
- */
 @Subject("click the cart button in the header")
 public class ClickCartButton implements Task {
 

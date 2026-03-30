@@ -6,14 +6,6 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.annotations.Subject;
 
-/**
- * Task: NavigateToHomePage
- *
- * Representa la acción de abrir la página principal de OpenCart.
- *
- * Principio Screenplay: Las Tasks orquestan Interactions de bajo nivel.
- * Principio SOLID: Single Responsibility – esta task solo abre la home.
- */
 @Subject("navigate to the OpenCart home page")
 public class NavigateToHomePage implements Task {
 

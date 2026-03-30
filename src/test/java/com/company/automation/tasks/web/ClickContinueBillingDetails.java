@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import org.openqa.selenium.WebDriver;
 
-/**
- * Task: ClickContinueBillingDetails
- *
- * Hace clic en el botón "Continue" de la sección Billing Details (Step 2).
- */
 @Subject("click continue button from billing details")
 public class ClickContinueBillingDetails implements Task {
 

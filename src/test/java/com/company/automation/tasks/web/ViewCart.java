@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.annotations.Subject;
 
-/**
- * Task: ViewCart
- *
- * Navega al carrito de compras haciendo clic en el ícono del carrito.
- */
 @Subject("view the shopping cart")
 public class ViewCart implements Task {
 

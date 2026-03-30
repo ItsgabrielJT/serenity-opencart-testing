@@ -3,12 +3,6 @@ package com.company.automation.ui.pages;
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
-/**
- * OrderConfirmationPageTargets
- *
- * Locators de la página de confirmación de orden.
- * Completar los selectores después de inspeccionar el HTML.
- */
 public class OrderConfirmationPageTargets {
 
     private OrderConfirmationPageTargets() {}

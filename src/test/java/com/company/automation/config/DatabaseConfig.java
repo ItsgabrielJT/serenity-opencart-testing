@@ -8,15 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * DatabaseConfig
- *
- * Singleton que gestiona el pool de conexiones HikariCP.
- * Lee la configuración desde db.properties ubicado en resources.
- *
- * Principio SOLID: Single Responsibility – solo gestiona el ciclo
- * de vida del DataSource.
- */
 public class DatabaseConfig {
 
     private static volatile DatabaseConfig instance;

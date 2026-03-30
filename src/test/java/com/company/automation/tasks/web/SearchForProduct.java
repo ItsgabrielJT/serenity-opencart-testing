@@ -8,14 +8,6 @@ import net.serenitybdd.screenplay.actions.Enter;
 import net.serenitybdd.screenplay.annotations.Subject;
 import org.openqa.selenium.Keys;
 
-/**
- * Task: SearchForProduct
- *
- * Escribe el nombre del producto en la barra de búsqueda y ejecuta la búsqueda.
- *
- * Principio Screenplay: Task de alto nivel que combina
- * la Interaction Enter y Click.
- */
 @Subject("search for '#product'")
 public class SearchForProduct implements Task {
 

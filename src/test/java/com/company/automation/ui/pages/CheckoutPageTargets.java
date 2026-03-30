@@ -3,18 +3,9 @@ package com.company.automation.ui.pages;
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
-/**
- * CheckoutPageTargets
- *
- * Locators de todas las secciones del flujo de checkout de OpenCart.
- * El checkout es multi-paso; cada sección está agrupada con comentarios.
- * Completar los selectores después de inspeccionar el HTML.
- */
 public class CheckoutPageTargets {
 
     private CheckoutPageTargets() {}
-
-    // ─── Sección 1: Checkout Options ─────────────────────────────────────────
 
     public static final Target GUEST_CHECKOUT_RADIO =
             Target.the("guest checkout radio button")
@@ -27,8 +18,6 @@ public class CheckoutPageTargets {
     public static final Target CONTINUE_CHECKOUT_BUTTON =
             Target.the("continue checkout button (step 1)")
                   .located(By.id("button-account"));
-
-    // ─── Sección 2: Billing Details ───────────────────────────────────────────
 
     public static final Target BILLING_FIRSTNAME =
             Target.the("billing first name field")
@@ -66,24 +55,20 @@ public class CheckoutPageTargets {
             Target.the("billing region/state select")
                   .located(By.id("input-payment-zone"));
 
-    // Para guest checkout el botón de continuar billing es #button-guest
     public static final Target BILLING_CONTINUE_BUTTON =
             Target.the("billing details continue button")
                   .located(By.id("button-guest"));
 
-    // ─── Sección 3: Delivery Details ─────────────────────────────────────────
 
     public static final Target DELIVERY_CONTINUE_BUTTON =
             Target.the("delivery details continue button")
                   .located(By.id("button-guest-shipping"));
 
-    // ─── Sección 4: Delivery Method ───────────────────────────────────────────
 
     public static final Target DELIVERY_METHOD_CONTINUE_BUTTON =
             Target.the("delivery method continue button")
                   .located(By.id("button-shipping-method"));
 
-    // ─── Sección 5: Payment Method ────────────────────────────────────────────
 
     public static final Target AGREE_TERMS_CHECKBOX =
             Target.the("agree to terms checkbox")
@@ -93,7 +78,6 @@ public class CheckoutPageTargets {
             Target.the("payment method continue button")
                   .located(By.id("button-payment-method"));
 
-    // ─── Sección 6: Order Confirmation ───────────────────────────────────────
 
     public static final Target CONFIRM_ORDER_BUTTON =
             Target.the("confirm order button")

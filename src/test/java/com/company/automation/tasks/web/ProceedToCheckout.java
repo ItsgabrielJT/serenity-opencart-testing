@@ -6,11 +6,6 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.annotations.Subject;
 
-/**
- * Task: ProceedToCheckout
- *
- * Hace clic en el botón "Proceed to Checkout" desde la página del carrito.
- */
 @Subject("proceed to checkout")
 public class ProceedToCheckout implements Task {
 

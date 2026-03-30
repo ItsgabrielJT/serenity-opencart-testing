@@ -8,16 +8,6 @@ import net.serenitybdd.screenplay.annotations.Subject;
 import org.openqa.selenium.WebDriver;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 
-/**
- * Task: CompleteCheckoutSteps
- *
- * Completa los pasos intermedios del checkout:
- *   - Delivery Details
- *   - Delivery Method
- *   - Payment Method (acepta términos y condiciones)
- *
- * Usa JavaScript como fallback para botones que podrían no encontrarse.
- */
 @Subject("complete the remaining checkout steps")
 public class CompleteCheckoutSteps implements Task {
 
@@ -32,18 +22,14 @@ public class CompleteCheckoutSteps implements Task {
         WebDriver driver = actor.abilityTo(BrowseTheWeb.class).getDriver();
         
         try {
-            // Step 3 – Delivery Details
             Thread.sleep(1000);
             clickButtonWithId(driver, "button-guest-shipping", "Delivery Details continue");
             
-            // Step 4 – Delivery Method
             Thread.sleep(1500);
             clickButtonWithId(driver, "button-shipping-method", "Delivery Method continue");
             
-            // Step 5 – Payment Method
             Thread.sleep(1500);
             
-            // Aceptar términos y condiciones
             String agreeScript = 
                 "var agreeCheckbox = document.querySelector(\"input[name='agree']\");" +
                 "if (agreeCheckbox && !agreeCheckbox.checked) { agreeCheckbox.click(); }";

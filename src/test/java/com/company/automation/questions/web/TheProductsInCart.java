@@ -10,14 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Question: TheProductsInCart
- *
- * Recupera la lista de nombres de productos presentes en el carrito.
- *
- * Principio Screenplay: Question de alto nivel que abstrae la lectura
- * del DOM en una respuesta semánticamente significativa.
- */
 @Subject("the products currently in the cart")
 public class TheProductsInCart implements Question<List<String>> {
 
