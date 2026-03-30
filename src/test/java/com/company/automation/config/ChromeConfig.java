@@ -17,7 +17,7 @@ public class ChromeConfig {
     public static ChromeOptions getChromeOptions() {
         ChromeOptions options = new ChromeOptions();
         
-        // Ignorar errores de certificado
+        // Ignorar errores de certificado (para soportar HTTP y certificados inseguros)
         options.addArguments("--ignore-certificate-errors");
         options.addArguments("--ignore-certificate-errors-spki-list");
         options.addArguments("--allow-running-insecure-content");
@@ -26,17 +26,15 @@ public class ChromeConfig {
         options.addArguments("--disable-gpu");
         options.addArguments("--remote-allow-origins=*");
         
-        // Permitir conexiones inseguras a localhost y dominios específicos
+        // Permitir conexiones inseguras (HTTP)
         options.addArguments("--allow-insecure-localhost");
-        options.addArguments("--unsafely-treat-insecure-origin-as-secure=https://opencart.abstracta.us");
-        options.addArguments("--unsafely-treat-insecure-origin-as-secure=https://opencart.abstracta.us:443");
         
         // Disable warnings and popups
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
         options.setExperimentalOption("useAutomationExtension", false);
         
-        // Aceptar certificados inseguros
+        // Aceptar certificados inseguros y trabajar con HTTP sin problemas
         options.setAcceptInsecureCerts(true);
         
         return options;
